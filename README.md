@@ -9,7 +9,7 @@ A starter web app for generating a stickman lip-sync video preview from uploaded
 - Canvas-rendered stickman scene with audio-reactive mouth + simple body motion
 - Play/pause/restart controls with live timeline preview
 - Starter export pipeline:
-  - implemented: **WebM** export via `MediaRecorder` (canvas + audio)
+  - implemented: **WebM** export via `MediaRecorder` (canvas, with audio when the browser supports audio `captureStream()`)
   - documented path to **MP4** via **WebCodecs + MP4Box.js** or **ffmpeg.wasm** conversion
 
 ## Setup
@@ -36,6 +36,26 @@ npm run preview
 4. Click **Export WebM (starter)** to download a recorded preview.
 5. Use the **MP4 export path** note in the UI as the next implementation step.
 
+### Browser requirements
+
+Preview playback uses the Web Audio API. WebM export additionally requires
+`MediaRecorder` and canvas `captureStream()`. The recorder adds the audio track
+only when the browser provides `HTMLMediaElement.captureStream()` (or
+Firefox's `mozCaptureStream()`), so a browser without audio capture support may
+produce a video-only WebM. MP4 export is not implemented; the UI describes the
+WebCodecs/MP4Box.js and ffmpeg.wasm options based on browser support.
+
+## Developer notes
+
+The app has no test or lint script in `package.json`; use the Vite scripts for
+local development and production verification:
+
+```bash
+npm run dev      # start the development server
+npm run build    # create the production bundle in dist/
+npm run preview  # serve the built bundle locally
+```
+
 ## Project structure
 
 ```text
@@ -53,4 +73,7 @@ src/
     math.js
   main.js
   style.css
+public/
+  favicon.svg
+index.html
 ```
